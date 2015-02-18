@@ -6,10 +6,11 @@ var path = require('path');
 var socketio = require('socket.io');
 var express = require('express');
 
-function BunyanLiveLogger(){
+function BunyanLiveLogger(options){
     Stream.call(this);
     this.writable = true;
     // Start WebService
+	var opt = options;
     var router = express();
     var server = http.createServer(router);
     var io = socketio.listen(server,{ log: false });
@@ -24,7 +25,6 @@ function BunyanLiveLogger(){
         messages.forEach(function (data) {
           socket.emit('message', data);
         });
-        is_started = true;
     
         sockets.push(socket);
     
@@ -40,6 +40,16 @@ function BunyanLiveLogger(){
         socket.on('message', function (msg) {
             return;
         });
+		if(!is_started){
+			is_started = true;
+			if(opt.ready_cb){
+				try{
+					opt.ready_cb();
+				}catch(e){
+				
+				}
+			}
+		}
       });
     function broadcast(event, data) {
         sockets.forEach(function (socket) {
@@ -79,4 +89,4 @@ BunyanLiveLogger.prototype.destroy = function () {
     this.writable = false;
 };
 
-module.exports = function(){return new BunyanLiveLogger()};
+module.exports = function(options){return new BunyanLiveLogger(options)};

@@ -159,6 +159,7 @@
           span{
             overflow: hidden;
             text-overflow: ellipsis;
+			white-space: nowrap;
           }
           paper-icon-button{
             padding-right: 20px;
@@ -168,7 +169,7 @@
         <div id="entry" lvl="{{msg.entry.level}}" horizontal layout>
           <div flex>
           <div id="line1" horizontal layout><core-icon icon="{{msg.entry.level | iconByLevel}}"></core-icon><span id="col_nr">{{msg.nr}}</span><span id="area">{{msg.entry.name}}</span><span id="msg_txt" flex>{{msg.entry.msg}}</span></div>
-          <div id="line2"><span id="time">{{msg.entry.time}}</span><span id="json">{{msg.entry | asJSONText}}</span></div>
+          <div id="line2" horizontal layout><span id="time">{{msg.entry.time}}</span><span id="json" flex>{{msg.entry | asJSONText}}</span></div>
           </div>
           <paper-icon-button icon="more-horiz" on-click="{{handleClick}}"></paper-icon-button>
         </div>
