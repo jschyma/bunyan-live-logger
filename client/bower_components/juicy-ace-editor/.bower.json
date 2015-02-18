@@ -1,0 +1,37 @@
+{
+  "name": "juicy-ace-editor",
+  "version": "0.0.3",
+  "description": "Custom Element with Ace(http://ace.c9.io/) code editor",
+  "license": "MIT",
+  "main": "src/juicy-ace-editor.html",
+  "keywords": [
+    "web-components",
+    "ace",
+    "code-editor"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "preview.png",
+    "ace/src-noconflict",
+    "img"
+  ],
+  "dependencies": {
+    "platform": "Polymer/platform#^0.4.0"
+  },
+  "homepage": "https://github.com/Juicy/juicy-ace-editor",
+  "authors": [
+    "Tomek Wytrebowicz <tomalecpub@gmail.com>"
+  ],
+  "_release": "0.0.3",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.0.3",
+    "commit": "b5da2814ed9277eee887fa759b7e204251be9073"
+  },
+  "_source": "git://github.com/Juicy/juicy-ace-editor.git",
+  "_target": "~0.0.3",
+  "_originalSource": "juicy-ace-editor",
+  "_direct": true
+}

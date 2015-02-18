@@ -1,0 +1,33 @@
+{
+  "name": "bunyan-live-logger",
+  "version": "1.0.0",
+  "authors": [
+    "jschyma <jeschyma@gmail.com>"
+  ],
+  "description": "Live Logger for Bunyan",
+  "main": "index.html",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#~0.5.4",
+    "core-scaffold": "Polymer/core-scaffold#~0.5.4",
+    "core-header-panel": "Polymer/core-header-panel#~0.5.4",
+    "core-menu": "Polymer/core-menu#~0.5.4",
+    "core-item": "Polymer/core-item#~0.5.4",
+    "core-icon-button": "Polymer/core-icon-button#~0.5.4",
+    "core-toolbar": "Polymer/core-toolbar#~0.5.4",
+    "paper-input": "Polymer/paper-input#~0.5.4"
+  },
+  "resolutions": {
+    "core-component-page": "master",
+    "polymer": "master",
+    "webcomponentsjs": "master"
+  }
+}

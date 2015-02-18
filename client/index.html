@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Bunyan Live Logger Interface</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../bower_components/webcomponentsjs/webcomponents.js"></script>
+    <link rel="import" href="../bower_components/polymer/polymer.html">
+    <link rel="import" href="../bower_components/core-scaffold/core-scaffold.html">
+    <link rel="import" href="../bower_components/core-header-panel/core-header-panel.html">
+    <link rel="import" href="../bower_components/core-menu/core-menu.html">
+    <link rel="import" href="../bower_components/core-item/core-item.html">
+    <link rel="import" href="../bower_components/core-icon-button/core-icon-button.html">
+    <link rel="import" href="../bower_components/core-toolbar/core-toolbar.html">
+    <link rel="import" href="../bower_components/paper-input/paper-input.html">
+    <link rel="import" href="../bower_components/jsonymer/jsonymer-editor.html">
+    <link rel="import" href="../bower_components/paper-shadow/paper-shadow.html">
+    <link rel="import" href="../bower_components/core-icons/core-icons.html">
+    <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+    <link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+    <link rel="import" href="../bower_components/core-list/core-list.html">
+    <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+    <link rel="import" href="../bower_components/core-pages/core-pages.html">
+     <link rel="import" href="../bower_components/juicy-ace-editor/src/juicy-ace-editor.html">
+    <script src="js/jquery.min.js"></script>
+  </head>
+  <body fullbleed vertical layout>
+    <polymer-element name="my-filter" attributes="data_in data_out filter_val filter_error">
+      <template>
+      </template>
+      <script>
+        Polymer({
+          data_in:[],
+          data_out:[],
+          filter_val:"",
+          filter_func:function(){return true},
+          filter_error:false,
+          observe:{
+            'data_in':'obDataIn',
+            'filter_val':'obFilterVal'
+          },
+          obDataIn:function(oldVa,newVa){
+              this.filterAllData();
+          },
+          obFilterVal:function(oldVa,newVa){
+              try{
+                if(this.filter_val===""){
+                  this.filter_func  = function(){return true};
+                  this.filter_error = false;
+                }else{
+                  var xx_filter_func = null;
+                  eval("xx_filter_func = function(){return "+this.filter_val+";};");
+                  this.filter_func  = xx_filter_func;
+                  this.filter_error = false;
+                }
+                this.filterAllData();
+              }catch(e){
+                this.filter_error = true;
+              }
+          },
+          filterAllData:function(){
+            this.filter_error=false;
+            if(this.filter_val===""){
+              this.data_out = this.data_in;
+            }else{
+              this.data_out = [];
+              for(var d in this.data_in){
+                var test_object = JSON.parse(JSON.stringify(this.data_in[d].entry));
+                try{
+                  if(this.filter_func.apply(test_object)===true){
+                    this.data_out.push(this.data_in[d]);
+                  }
+                }catch(e){
+                  this.filter_error=true;
+                }
+              }
+            }
+          }
+        });
+      </script>
+    </polymer-element>
+    <polymer-element name="my-server-connector" attributes="messages is_ready">
+      <template>
+      </template>
+      <script src="/socket.io/socket.io.js"></script>
+      <script>
+        Polymer({
+          // properties and methods here
+          is_ready:false,
+          messages:[],
+          ready: function() { 
+            var me = this;
+            var socket = io.connect();
+            socket.on('connect', function () {
+              this.is_ready = true;
+            });
+    
+            socket.on('message', function (msg) {
+              me.messages.push(msg);
+            });
+          },
+        });
+      </script>
+    </polymer-element>
+    <polymer-element name="my-log-entry" attributes="msg">
+      <template>
+        <style type="text/css">
+          #entry{
+            padding: 2px;
+            height: 40px;
+            border-left-style: solid;
+            border-left-width: 10px;
+            border-bottom-style: solid;
+            border-bottom-width: 2px;
+          }
+          #entry[lvl="10"]{
+            background-color: rgb(230, 224, 224);
+            color:rgb(110, 110, 119);
+            border-color: rgb(139, 162, 177);
+          }
+          #entry[lvl="20"]{
+            background-color: rgb(138, 175, 174);
+            color: rgb(50, 50, 59);
+            border-color: rgb(86, 87, 101);
+          }
+          #entry[lvl="30"]{
+            background-color: rgb(209, 246, 178);
+            color: green;
+            border-color: rgb(51, 174, 51);
+          }
+          #entry[lvl="40"]{
+            background-color: rgb(215, 222, 93);
+            color: rgb(105, 117, 8);
+            border-color: rgb(235, 244, 18);
+          }
+          #entry[lvl="50"]{
+            background-color: rgb(210, 68, 68);
+            color: rgb(229, 229, 229);
+            border-color: rgb(111, 1, 1);
+          }
+          #entry[lvl="60"]{
+            background-color: rgb(255, 0, 0);
+            color: rgb(0, 0, 0);
+            border-color: rgb(111, 1, 1);
+          }
+          #col_nr{
+            margin-left: 30px;
+            width: 40px;
+          }
+          #area{
+            width: 120px;
+            padding-left: 2px;
+          }
+          #msg_txt{
+            padding-left: 2px;
+          }
+          #json{
+            padding-left: 2px;
+          }
+          span{
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+          paper-icon-button{
+            padding-right: 20px;
+            padding-left: 30px;
+          }
+        </style>
+        <div id="entry" lvl="{{msg.entry.level}}" horizontal layout>
+          <div flex>
+          <div id="line1" horizontal layout><core-icon icon="{{msg.entry.level | iconByLevel}}"></core-icon><span id="col_nr">{{msg.nr}}</span><span id="area">{{msg.entry.name}}</span><span id="msg_txt" flex>{{msg.entry.msg}}</span></div>
+          <div id="line2"><span id="time">{{msg.entry.time}}</span><span id="json">{{msg.entry | asJSONText}}</span></div>
+          </div>
+          <paper-icon-button icon="more-horiz" on-click="{{handleClick}}"></paper-icon-button>
+        </div>
+      </template>
+      <script>
+        Polymer({
+          msg:{},
+          iconByLevel: function(value) {
+            switch (value) {
+              case 10:
+                return "settings-ethernet";
+              case 20:
+                return "pageview";
+              case 30:
+                return "info";
+              case 40:
+                return "warning";
+              case 50:
+                return "error";
+              case 60:
+                return "error";
+              default:
+                return "";
+            }
+          },
+          asJSONText: function(json_in){
+            if(json_in){
+              var newObject = JSON.parse(JSON.stringify(json_in));
+              function delAttr(n){
+                if(n in newObject)
+                 delete newObject[n];
+              }
+              delAttr("name");
+              delAttr("hostname");
+              delAttr("pid");
+              delAttr("level");
+              delAttr("msg");
+              delAttr("time");
+              delAttr("src");
+              delAttr("v");
+              return JSON.stringify((newObject));
+            }else{
+              return "";
+            }
+          },
+          handleClick:function(){
+            this.fire("line_click");
+          }
+        });
+      </script>
+    </polymer-element>
+    <polymer-element name="my-main">
+      <template>
+        <style type="text/css">
+        :host {
+          display: block;
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+          }
+          core-header-panel {
+            width: 100%;
+            height: 100%;
+          }
+          .core-header {
+            height: 60px;
+            line-height: 60px;
+            font-size: 18px;
+            padding: 0 10px;
+            background-color: #4F7DC9;
+            color: #FFF;
+            transition: height 0.2s;
+          }
+          .content {
+            background: linear-gradient(rgb(214, 227, 231), lightblue);
+            width: 100%;
+            height:100%;
+          }
+          #content{
+            padding:10px;
+            
+          }
+          #core_toolbar{
+            background-color:#526E9C;
+            
+          }
+          #right_area{
+            padding: 5px;
+          }
+          #right_info_area{
+            background-color: white;
+            padding: 16px;
+            border-radius: 2px;
+            box-sizing: border-box;
+            margin: 10px;
+            transition: width 2s;
+            padding-top: 50px;
+          }
+          #expander_area{
+            position: absolute;
+            left: -19px;
+            z-index: 10;
+            top: 20px;
+          }
+          #expander_area paper-fab{
+             margin: 2px;
+             background-color: #686767;
+          }
+          #left_content_area{
+            background-color: white;
+            padding: 16px;
+            border-radius: 2px;
+            box-sizing: border-box;
+            margin: 10px;
+          }
+          #header_row{
+            border: solid 1px grey;
+            font-size: 14pt;
+            font-weight: 700;
+            color: grey;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+          }
+          #header_row .level{
+            width: 56px;
+            padding-left: 10px;
+          }
+          #header_row .nr{
+            width: 40px;
+          }
+          #header_row .detail{
+            padding-right: 30px;
+          }
+          #header_row .area{
+            width: 122px;
+          }
+          core-list{
+            border: solid 1px grey;
+          }
+          #right_side_header{
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            border-bottom-color: grey;
+            border-bottom-style: solid;
+            width: 100%;
+            z-index: 0;
+            height: 40px;
+            border-bottom-width: 2px;
+          }
+          #right_side_header div{
+            margin-left: 30px;
+            margin-top: 15px;
+            font-size: 14pt;
+            font-weight: 700;
+            color: grey;
+          }
+          #tab_show_area core-pages > *{
+            overflow: scroll;
+          }
+        </style>
+        <my-server-connector messages="{{msgs}}"></my-server-connector>
+        <my-filter data_in="{{msgs}}" data_out="{{msgs_filtered}}" filter_val="{{filter_text}}"></my-filter>
+        <!--<core-scaffold rightdrawer id="core_scaffold">
+          <core-header-panel mode="seamed" id="core_header_panel" navigation flex>
+            <core-toolbar id="core_toolbar"></core-toolbar>
+            <div id="div1">hallo</div>
+            <jsonymer-editor obj="{{json_oo}}"></jsonymer-editor>
+          </core-header-panel>
+          <div id="div" tool>
+            <paper-input label="Type something..." id="paper_input"></paper-input>
+          </div>
+          <div id="content">
+            <template repeat="{{m in msgs}}">
+              <my-log-entry msg="{{m}}" on-click="{{my_entry_cb}}"></my-log-entry>
+            </template>
+          </div>
+        </core-scaffold>-->
+        <core-header-panel mode="standard" id="core_header_panel" flex>
+          <div class="core-header">Bunyan Live Logger</div>
+          <div class="content" fit horizontal layout>
+            <div id="left_area" flex vertical layout>
+              <paper-shadow id="left_content_area" flex z="1" vertical layout>
+                <paper-input label="Filter" id="filter_input" value="{{filter_text}}"></paper-input>
+                <div id="header_row" horizontal layout>
+                  <span class="level">Level</span>
+                  <span class="nr">Nr.</span>
+                  <span class="area">Area</span>
+                  <span class="text" flex>Text</span>
+                  <span class="detail">Details</span>
+                </div>
+                <core-list data="{{msgs_filtered}}" flex>
+                  <template>
+                    <my-log-entry msg="{{model}}" on-line_click="{{my_entry_cb}}"></my-log-entry>
+                  </template>
+                </core-list>
+              </paper-shadow>
+            </div>
+            <div id="right_area" vertical layout>
+              <paper-shadow id="right_info_area" flex z="3" style="width:250px;" vertical layout>
+                <div id="expander_area" vertical layout>
+                  <paper-fab id="left_expand_btn" on-click="{{left_expand}}" mini icon="arrow-back" title="arrow-back"></paper-fab>
+                  <paper-fab id="right_expand_btn" on-click="{{right_expand}}" mini icon="arrow-forward" title="arrow-forward"></paper-fab>
+                </div>
+                <div id="right_side_header">
+                  <div>Details for Msg: {{sel_msg.nr}}</div>
+                </div>
+                <div flex vertical layout>
+                  <paper-tabs id="tabs" selected="{{selTab}}" scrollable>
+                    <paper-tab>JSON</paper-tab>
+                    <!--<paper-tab>Source</paper-tab>-->
+                  </paper-tabs>
+                  <div id="tab_show_area" flex vertical layout>
+                    <core-pages selected="{{selTab}}" flex>
+                      <jsonymer-editor obj="{{sel_msg}}"></jsonymer-editor>
+                      <!--<juicy-ace-editor theme="ace/theme/monokai" mode="ace/mode/javascript" readonly="true">source</juicy-ace-editor>-->
+                    </core-pages>
+                  </div>
+                </div>
+              </paper-shadow>
+            </div>
+          </div>
+        </core-header-panel>
+      </template>
+      <script>
+        Polymer({
+          msgs:[],
+          sel_msg:null,
+          selTab:0,
+          my_entry_cb:function(evt){
+            this.sel_msg = evt.path[0].msg;
+          },
+          left_expand:function(){// TODO hier
+            var w = $(this.$.right_info_area).width();
+            $(this.$.right_info_area).width(w+50);
+          },
+          right_expand:function(){
+            var w = $(this.$.right_info_area).width();
+            $(this.$.right_info_area).width(w-50);
+          }
+        });
+      </script>
+    </polymer-element>
+    <my-main flex></my-main>
+  </body>
+</html>

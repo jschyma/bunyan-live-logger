@@ -1,0 +1,40 @@
+{
+  "name": "bunyan-live-logger",
+  "version": "1.0.0",
+  "description": "A development utility to show log events logged by bunyan live to a webpage.",
+  "main": "bunyan-live-logger.js",
+  "directories": {
+    "client": "client",
+    "test": "test"
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "bunyan-live-logger.js",
+    "client/"
+  ],
+  "scripts": {
+    "test": "node test/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jschyma/bunyan-live-logger"
+  },
+  "keywords": [
+    "bunyan",
+    "live",
+    "logger",
+    "development"
+  ],
+  "author": "Jens Schyma <jeschyma@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jschyma/bunyan-live-logger/issues"
+  },
+  "homepage": "https://github.com/jschyma/bunyan-live-logger",
+  "dependencies": {
+    "bunyan": "^1.3.3",
+    "express": "^4.11.2",
+    "socket.io": "^1.3.4"
+  }
+}
