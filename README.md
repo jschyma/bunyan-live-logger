@@ -38,21 +38,21 @@ Live Logging server listening at 127.0.0.1:57712
 ```
 Then you start your web browser and navigate to the following url to see the logs. Chrome Browser should be preferred.
 
-##Features
+## Features
   * Show all logs live on a Webpage
   * Filter the logs within the page
   * Show the log entries as json(formatted)
   * Show src location if 'src':true is active. (Planned)
   * Allow custom detail views. (Planned)
   
-##License
+## License
 MIT. See "LICENSE.txt".
 Bunyan Live Logger was developed by Jens Schyma.
 
-##Contribution
+## Contribution
 Constirbution is welcomed. Use the Github functions PullRequests and Issues to contribute.
 
-##See Also
+## See Also
   * [Bunyan](https://github.com/trentm/node-bunyan)
 
 [npm-image]: https://img.shields.io/npm/v/bunyan-live-logger.svg?style=flat

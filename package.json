@@ -1,6 +1,6 @@
 {
   "name": "bunyan-live-logger",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A development utility to show log events logged by bunyan live to a webpage.",
   "main": "bunyan-live-logger.js",
   "directories": {
